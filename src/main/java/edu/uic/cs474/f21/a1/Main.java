@@ -5,6 +5,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.TypeDeclaration;
+import edu.uic.cs474.f21.a1.solution.A1Solution;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,7 +18,8 @@ import java.util.Set;
 public class Main {
 
     public static DynamicDispatchExplainer getExplainer() {
-        throw new Error("Not implemented");
+//        throw new Error("Not implemented");
+        return new A1Solution();
     }
 
     private Map<String, ClassOrInterfaceDeclaration> classes = new HashMap<>();
