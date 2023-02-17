@@ -15,32 +15,36 @@ public class A1Solution implements DynamicDispatchExplainer {
 
         ClassOrInterfaceDeclaration d = classes.get(receiverType);
 
-        if(!d.getMethodsByName(methodName).isEmpty()){
+        if(!d.getMethodsBySignature(methodName, argumentTypes).isEmpty() && !d.getMethodsBySignature(methodName, argumentTypes).get(0).isAbstract()){
             ret.add(d.getNameAsString());
             return ret;
         }
+        if(d.getExtendedTypes() == null) {
+            return ret;
+        }
 
-        while (!d.isEmpty()) {
+        while (!d.getExtendedTypes().isEmpty()) {
             ClassOrInterfaceType a = d.getExtendedTypes().get(0);
             d = classes.get(a.getName().asString());
-            if (!d.getMethodsByName(methodName).isEmpty()) {
+            if (!d.getMethodsBySignature(methodName, argumentTypes).isEmpty() && !d.getMethodsBySignature(methodName, argumentTypes).get(0).isAbstract() && !d.getMethodsBySignature(methodName, argumentTypes).get(0).isPrivate() && !d.getMethodsBySignature(methodName, argumentTypes).get(0).isStatic()) {
                 ret.add(d.getNameAsString());
                 return ret;
             }
 
-        }
-        for(ClassOrInterfaceType classOrInterfaceType : d.getExtendedTypes()) {
-            String name = classOrInterfaceType.getNameAsString();
-            if(d.getMethodsByName(methodName).isEmpty()) {
-                ret.addAll(explain(classes, name, methodName, argumentTypes));
-            }
-        }
-//        ClassOrInterfaceType b = d.getExtendedTypes();
-//        if (!d.getExtendedTypes().isEmpty()){
-//            for (ClassOrInterfaceType classOrInterfaceType: a) {
-//                explain(classes, d.getNameAsString(), methodName, argumentTypes);
+//            for (MethodDeclaration method : d.getMethodsBySignature(methodName, argumentTypes)) {
+//                if (method.isAbstract()) {
+//                    // add the class to the set if the method is abstract
+//                    ret.add(d.getNameAsString());
+//                    return ret;
+//                }
+//                if (method.isPrivate() || method.isStatic()) {
+//                    // add the class to the set if the method is private or static
+//                    ret.add(d.getNameAsString());
+//                    return ret;
+//                }
 //            }
-//        }
+        }
+
         return ret;
     }
 }
