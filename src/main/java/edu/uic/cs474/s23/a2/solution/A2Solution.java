@@ -11,18 +11,22 @@ public class A2Solution implements ObjectInspector {
     @Override
     public Map<String, String> describeObject(Object o) {
 
-        Class<?> c = o.getClass();  // getting class of o
-        Field[] fs = c.getDeclaredFields(); // now we can get all the fields in c by declaring Field[] in String
         Map<String, String> ret = new HashMap<>();
-        for (Field f : fs) {
-            try {
-                String key = f.getName();
-                Object value = f.get(o);
-                String setValue = (String) value;
-                ret.put(key, setValue);
-            } catch (ReflectiveOperationException e) {
-                throw new Error(e);
+
+        Class<?> c = o.getClass();  // getting class of o
+        while (c != null) {
+            Field[] fs = c.getDeclaredFields(); // now we can get all the fields in c by declaring Field[] in String
+            for (Field f : fs) {
+                try {
+                    String key = f.getName();
+                    Object value = f.get(o);
+                    String setValue = (String) value;
+                    ret.put(key, setValue);
+                } catch (ReflectiveOperationException e) {
+                    throw new Error(e);
+                }
             }
+            c = c.getSuperclass();
         }
         return ret;
     }
