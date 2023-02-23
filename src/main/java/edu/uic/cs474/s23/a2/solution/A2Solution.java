@@ -13,6 +13,6 @@ public class A2Solution implements ObjectInspector {
 
     @Override
     public void updateObject(Object o, Map<String, Object> fields) {
-        throw new Error("NOt implemented");
+        throw new Error("Not implemented");
     }
 }
