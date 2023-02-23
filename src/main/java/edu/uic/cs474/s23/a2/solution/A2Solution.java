@@ -17,7 +17,7 @@ public class A2Solution implements ObjectInspector {
         for (Field f : fs) {
             try {
                 String key = f.getName();
-                Object value = f.get(0);
+                Object value = f.get(o);
                 String setValue = (String) value;
                 ret.put(key, setValue);
             } catch (ReflectiveOperationException e) {
