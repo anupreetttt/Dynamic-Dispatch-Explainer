@@ -17,7 +17,7 @@ public class A2Solution implements ObjectInspector {
         while (c != null) {
             Field[] fs = c.getDeclaredFields(); // now we can get all the fields in c by declaring Field[] in String
             for (Field f : fs) {
-                if (!f.isAccessible()) {
+                if (!f.canAccess(o)) {
                     f.setAccessible(true);
                 }
                 try {
