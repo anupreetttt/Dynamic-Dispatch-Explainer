@@ -16,6 +16,37 @@ public class A2Solution implements ObjectInspector {
         Map<String, String> ret = new HashMap<>();
 
         try{
+            Class<?> c = o.getClass();
+//            System.out.println(c.getSimpleName());
+            while (c != null) {
+                Field[] fields = c.getDeclaredFields();
+                for (Field field : fields) {
+                    field.setAccessible(true);
+                    String fieldName = field.getName();
+                    if (Modifier.isStatic(field.getModifiers())) {
+                        fieldName = c.getSimpleName() + "." + fieldName;
+                    }
+                    try {
+                        Object getObjVal = field.get(o);
+                        if (getObjVal != null) {
+                            ret.put(fieldName, getObjVal.toString());
+                        } else {
+                            ret.put(fieldName, "null");
+                        }
+                    } catch (IllegalArgumentException e) {
+//                        throw new Error(e);
+                    }
+                }
+                c = c.getSuperclass();
+            }
+            return ret;
+            // handling exceptions and errors
+        } catch (Exception | Error e) {
+            System.out.println("Test 5 I: " + e);
+//                    throw new RuntimeException("Error describing object", e);
+        }
+
+        try{
             Class<?> c = (Class<?>) o;
 //            System.out.println(c.getSimpleName());
             while (c != null) {
@@ -40,12 +71,13 @@ public class A2Solution implements ObjectInspector {
                 c = c.getSuperclass();
             }
             return ret;
-        } catch (Exception e) {
-            System.out.println("Test" + e);
+        } catch (Exception | Error e) {
+            System.out.println("Test 5 II " + e);
 //                    throw new RuntimeException("Error describing object", e);
         }
         try {
-            Class<?> c = o.getClass();  // getting class of o
+            Class<?> c = o.getClass();
+            System.out.println("Test class 6: " + c);// getting class of o
             while (c != null) {
                 Field[] fs = c.getDeclaredFields(); // now we can get all the fields in c by declaring Field[] in String
                 for (Field f : fs) {
@@ -67,7 +99,13 @@ public class A2Solution implements ObjectInspector {
                             setValue = value + "#D";
                         } else if (value instanceof Short) {
                             setValue = "0" + Integer.toOctalString((Short) value);
-                        } else {
+                        }
+//                        else if (value instanceof Byte) {
+//                            setValue = "0x" + String.format("%02x", (Byte) value);
+//                        } else if (value instanceof Character) {
+//                            setValue = "'" + value + "'";
+//                        }
+                        else {
                             setValue = value.toString();
 //                        System.out.println(setValue);
                         }
@@ -140,44 +178,53 @@ public class A2Solution implements ObjectInspector {
                     f.setAccessible(true);
                 }
                 try {
-                    Object newValue = updateMap.get(f.getName());
-                    if (newValue == null) {
+                    Object obj = updateMap.get(f.getName());
+                    if (obj == null) {
                         f.set(o, null);
-                    } else if (f.getType().isAssignableFrom(newValue.getClass())) {
-                        f.set(o, newValue);
+                    } else if (f.getType().isAssignableFrom(obj.getClass())) {
+                        f.set(o, obj);
                     } else {
-                        // Attempt to convert newValue to the field's type
-                        Object convertedValue = convertValue(newValue, f.getType());
+                        // Trying to convert obj to the field's type
+                        Object convertedValue = changeType(obj, f.getType());
                         f.set(o, convertedValue);
                     }
                 } catch (IllegalAccessException e) {
-                    // Do nothing and move on to the next field
+                    // Move on to next field
                 }
             }
             c = c.getSuperclass();
         }
     }
 
-    private Object convertValue(Object value, Class<?> targetClass) {
-        if (value == null) {
+    private Object changeType(Object obj, Class<?> myClass) {
+        if (obj == null) {
             return null;
         }
-        if (targetClass.isAssignableFrom(value.getClass())) {
-            return value;
+        if (myClass.isAssignableFrom(obj.getClass())) {
+            return obj;
         }
-        if (targetClass == boolean.class || targetClass == Boolean.class) {
-            return Boolean.parseBoolean(value.toString());
-        } else if (targetClass == byte.class || targetClass == Byte.class) {
-            return Byte.parseByte(value.toString());
-        } else if (targetClass == char.class || targetClass == Character.class) {
-            return value.toString().charAt(0);
-        } else if (targetClass == double.class || targetClass == Double.class) {
-            return Double.parseDouble(value.toString());
-        } else if (targetClass == float.class || targetClass == Float.class) {
-            return Float.parseFloat(value.toString());
-        } else if (targetClass == int.class || targetClass == Integer.class) {
-            return Integer.parseInt(value.toString());
+        switch(myClass.getSimpleName()) {
+            case "boolean":
+            case "Boolean":
+                return Boolean.parseBoolean(obj.toString());
+            case "byte":
+            case "Byte":
+                return Byte.parseByte(obj.toString());
+            case "char":
+            case "Character":
+                return obj.toString().charAt(0);
+            case "double":
+            case "Double":
+                return Double.parseDouble(obj.toString());
+            case "float":
+            case "Float":
+                return Float.parseFloat(obj.toString());
+            case "int":
+            case "Integer":
+                return Integer.parseInt(obj.toString());
+            default:
+                return obj;
         }
-        return value;
+
     }
 }
