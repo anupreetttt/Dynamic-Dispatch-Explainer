@@ -15,37 +15,6 @@ public class A2Solution implements ObjectInspector {
 // key: field name, value: value of the field
         Map<String, String> ret = new HashMap<>();
 
-//        try{
-//            Class<?> c = o.getClass();
-////            System.out.println(c.getSimpleName());
-//            while (c != null) {
-//                Field[] fields = c.getDeclaredFields();
-//                for (Field field : fields) {
-//                    field.setAccessible(true);
-//                    String fieldName = field.getName();
-//                    if (Modifier.isStatic(field.getModifiers())) {
-//                        fieldName = c.getSimpleName() + "." + fieldName;
-//                    }
-//                    try {
-//                        Object getObjVal = field.get(o);
-//                        if (getObjVal != null) {
-//                            ret.put(fieldName, getObjVal.toString());
-//                        } else {
-//                            ret.put(fieldName, "null");
-//                        }
-//                    } catch (IllegalArgumentException e) {
-////                        throw new Error(e);
-//                    }
-//                }
-//                c = c.getSuperclass();
-//            }
-//            return ret;
-//            // handling exceptions and errors
-//        } catch (Exception | Error e) {
-//            System.out.println("Test 5 I: " + e);
-////                    throw new RuntimeException("Error describing object", e);
-//        }
-
         try{
             Class<?> c = (Class<?>) o;
 //            System.out.println(c.getSimpleName());
@@ -73,6 +42,36 @@ public class A2Solution implements ObjectInspector {
             return ret;
         } catch (Exception | Error e) {
             System.out.println("Test 5 II " + e);
+//                    throw new RuntimeException("Error describing object", e);
+        }
+        try{
+            Class<?> c = o.getClass();
+//            System.out.println(c.getSimpleName());
+            while (c != null) {
+                Field[] fields = c.getDeclaredFields();
+                for (Field field : fields) {
+                    field.setAccessible(true);
+                    String fieldName = field.getName();
+                    if (Modifier.isStatic(field.getModifiers())) {
+                        fieldName = c.getSimpleName() + "." + fieldName;
+                    }
+                    try {
+                        Object getObjVal = field.get(o);
+                        if (getObjVal != null) {
+                            ret.put(fieldName, getObjVal.toString());
+                        } else {
+                            ret.put(fieldName, "null");
+                        }
+                    } catch (IllegalArgumentException e) {
+//                        throw new Error(e);
+                    }
+                }
+                c = c.getSuperclass();
+            }
+            return ret;
+            // handling exceptions and errors
+        } catch (Exception | Error e) {
+            System.out.println("Test 5 I: " + e);
 //                    throw new RuntimeException("Error describing object", e);
         }
         try {
